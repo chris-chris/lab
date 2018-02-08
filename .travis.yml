@@ -23,6 +23,7 @@ addons:
       - realpath
 
 before_install:
+  - openssl aes-256-cbc -K $encrypted_b9cce189f985_key -iv $encrypted_b9cce189f985_iv -in gcs_key.enc -out gcs_key.json -d
   - curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
   - echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
   - sudo add-apt-repository -y ppa:webupd8team/java
@@ -32,4 +33,4 @@ before_install:
   - sudo apt-get install bazel
 
 script:
-  - bazel test -c opt --show_progress_rate_limit 300 //...
+  - bazel test -c opt --show_progress_rate_limit=300 --remote_http_cache=https://storage.googleapis.com/dmlab-travis-cache --google_credentials=gcs_key.json //...
